@@ -1,0 +1,38 @@
+#!/bin/bash
+set -euo pipefail
+
+trap 'pkill -P $$' EXIT
+
+AVAHI_SUBDOMAINS_LIST="${AVAHI_SUBDOMAINS_LIST:-"/etc/avahi-subdomains/subdomains"}"
+
+if [[ "$(uname -s)" == "Linux" ]]; then
+  IFS=" " read -a IPS < <(hostname --ip-address)
+else
+  IPS=(192.168.0.20) # mock for testing on unsupported platforms
+fi
+
+HOSTNAME="${HOSTNAME_OVERRIDE:-"$(hostname)"}"
+ZONE="${ZONE_OVERRIDE:-"local"}"
+
+printf "Zone: %s\n" "$ZONE"
+printf "Hostname: %s\n" "$HOSTNAME"
+printf "IPs:\n"
+for IP in "${IPS[@]}"; do
+  printf "  %s\n" "$IP"
+done
+
+spawn-publish() {
+  local SUBDOMAIN="$1"
+  local FQDN="$SUBDOMAIN.$HOSTNAME.$ZONE"
+
+  for IP in "${IPS[@]}"; do
+    echo "> $FQDN $IP"
+    avahi-publish -a "$FQDN" -R "$IP" &
+  done
+}
+
+while IFS= read -r SUBDOMAIN; do
+  spawn-publish "$SUBDOMAIN"
+done <"$AVAHI_SUBDOMAINS_LIST"
+
+wait -n

@@ -1,0 +1,10 @@
+[Unit]
+Wants=network-online.target
+After=avahi-daemon.service
+
+[Service]
+Type=exec
+ExecStart=/usr/local/bin/avahi-subdomains
+
+[Install]
+WantedBy=multi-user.target
