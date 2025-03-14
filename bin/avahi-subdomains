@@ -6,7 +6,7 @@ trap 'pkill -P $$' EXIT
 AVAHI_SUBDOMAINS_LIST="${AVAHI_SUBDOMAINS_LIST:-"/etc/avahi-subdomains/subdomains"}"
 
 if [[ "$(uname -s)" == "Linux" ]]; then
-  IFS=" " read -a IPS < <(hostname --ip-address)
+  IFS=" " read -a IPS < <(hostname --all-ip-addresses)
 else
   IPS=(192.168.0.20) # mock for testing on unsupported platforms
 fi
