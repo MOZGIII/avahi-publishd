@@ -5,7 +5,7 @@ Publish the subdomains to mDNS with avahi on Linux.
 ## Requirements
 
 ```shell
-sudo apt install avahi-utils
+sudo apt install avahi-utils jq make
 ```
 
 ## Installation

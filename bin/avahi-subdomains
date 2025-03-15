@@ -6,12 +6,12 @@ trap 'pkill -P $$' EXIT
 AVAHI_SUBDOMAINS_LIST="${AVAHI_SUBDOMAINS_LIST:-"/etc/avahi-subdomains/subdomains"}"
 
 if [[ "$(uname -s)" == "Linux" ]]; then
-  IFS=" " read -a IPS < <(hostname --all-ip-addresses)
+  mapfile -t IPS < <(ip -json addr show | jq -r '.[].addr_info[] | select(.scope != "host") | .local')
 else
   IPS=(192.168.0.20) # mock for testing on unsupported platforms
 fi
 
-HOSTNAME="${HOSTNAME_OVERRIDE:-"$(hostname)"}"
+HOSTNAME="${HOSTNAME_OVERRIDE:-"$(hostnamectl hostname --static)"}"
 ZONE="${ZONE_OVERRIDE:-"local"}"
 
 printf "Zone: %s\n" "$ZONE"
