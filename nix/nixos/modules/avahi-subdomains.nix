@@ -21,6 +21,15 @@ in {
         A list of subdomains to serve, without the domain suffix.
       '';
     };
+
+    fqdns = lib.mkOption {
+      type = lib.types.lines;
+      default = "";
+      description = ''
+        A list of FQDNs to serve; each domain should end with `.local` unless
+        you tweak avahi to allow publishing other TLDs.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -41,11 +50,14 @@ in {
           ExecStart = "${pkgs.avahi-subdomains}/bin/avahi-subdomains";
           ConfigurationDirectory = "avahi-subdomains";
         };
-        restartTriggers =
-          [ config.environment.etc."avahi-subdomains/subdomains".source ];
+        restartTriggers = [
+          config.environment.etc."avahi-subdomains/subdomains".source
+          config.environment.etc."avahi-subdomains/fqdns".source
+        ];
       };
     };
 
     environment.etc."avahi-subdomains/subdomains".text = cfg.subdomains;
+    environment.etc."avahi-subdomains/fqdns".text = cfg.fqdns;
   };
 }
