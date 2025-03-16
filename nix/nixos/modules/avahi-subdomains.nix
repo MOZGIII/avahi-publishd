@@ -6,13 +6,9 @@ let
 
 in {
   options.services.avahi-subdomains = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = ''
-        Whether to run the avahi-subdomains service.
-      '';
-    };
+    enable = lib.mkEnableOption "avahi-subdomains";
+
+    package = lib.mkPackageOption pkgs "avahi-subdomains" { };
 
     subdomains = lib.mkOption {
       type = lib.types.lines;
@@ -38,7 +34,7 @@ in {
     services.avahi.publish.addresses = true;
     services.avahi.publish.userServices = true;
 
-    environment.systemPackages = [ pkgs.avahi-subdomains ];
+    environment.systemPackages = [ cfg.package ];
 
     systemd.services = {
       avahi-subdomains = {
@@ -47,7 +43,7 @@ in {
         after = [ "avahi-daemon.service" ];
         serviceConfig = {
           Type = "exec";
-          ExecStart = "${pkgs.avahi-subdomains}/bin/avahi-subdomains";
+          ExecStart = "${cfg.package}/bin/avahi-subdomains";
           ConfigurationDirectory = "avahi-subdomains";
         };
         restartTriggers = [
