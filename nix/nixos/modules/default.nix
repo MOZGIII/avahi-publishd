@@ -4,7 +4,7 @@
   imports = [
 
     ./overlay.nix
-    ./avahi-subdomains.nix
+    ./avahi-publishd.nix
 
   ];
 }

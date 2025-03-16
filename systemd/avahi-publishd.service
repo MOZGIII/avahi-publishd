@@ -4,7 +4,7 @@ After=avahi-daemon.service
 
 [Service]
 Type=exec
-ExecStart=/usr/local/bin/avahi-subdomains
+ExecStart=/usr/local/bin/avahi-publishd
 
 [Install]
 WantedBy=multi-user.target

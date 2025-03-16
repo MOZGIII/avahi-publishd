@@ -1,6 +1,6 @@
-# avahi-subdomains
+# avahi-publishd
 
-Publish the subdomains to mDNS with avahi on Linux.
+Publish the subdomains or custom FQDNs to mDNS with Avahi on Linux.
 
 ## Requirements
 
@@ -18,6 +18,7 @@ sudo apt install avahi-utils jq make
 
 ## Usage
 
-Write the list of domains to publish to `/etc/avahi-subdomains/subdomains`.
+Write the list of subdomains to publish to `/etc/avahi-publishd/subdomains` and
+FQDNs to `/etc/avahi-publishd/fqdns`.
 
-Run `systemctl enable --now avahi-subdomains`.
+Run `systemctl enable --now avahi-publishd`.

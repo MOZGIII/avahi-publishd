@@ -3,10 +3,10 @@ set -euo pipefail
 
 trap 'pkill -P $$' EXIT
 
-AVAHI_SUBDOMAINS_CONF_DIR="/etc/avahi-subdomains"
+AVAHI_PUBLISHD_CONF_DIR="/etc/avahi-publishd"
 
-AVAHI_SUBDOMAINS_LIST="${AVAHI_SUBDOMAINS_LIST:-"$AVAHI_SUBDOMAINS_CONF_DIR/subdomains"}"
-AVAHI_FQDNS_LIST="${AVAHI_FQDNS_LIST:-"$AVAHI_SUBDOMAINS_CONF_DIR/fqdns"}"
+SUBDOMAINS_LIST="${AVAHI_PUBLISHD_SUBDOMAINS_LIST:-"$AVAHI_PUBLISHD_CONF_DIR/subdomains"}"
+FQDNS_LIST="${AVAHI_PUBLISHD_FQDNS_LIST:-"$AVAHI_PUBLISHD_CONF_DIR/fqdns"}"
 
 if [[ "$(uname -s)" == "Linux" ]]; then
   mapfile -t IPS < <(ip -json addr show | jq -r '.[].addr_info[] | select(.scope != "host") | .local')
@@ -14,7 +14,7 @@ else
   IPS=(192.168.0.20) # mock for testing on unsupported platforms
 fi
 
-HOSTNAME="${HOSTNAME_OVERRIDE:-"$(hostnamectl hostname --static)"}"
+HOSTNAME="${AVAHI_PUBLISHD_HOSTNAME_OVERRIDE:-"$(hostnamectl hostname --static)"}"
 ZONE="${ZONE_OVERRIDE:-"local"}"
 
 printf "Zone: %s\n" "$ZONE"
@@ -35,10 +35,10 @@ spawn-publish() {
 
 while IFS= read -r SUBDOMAIN; do
   spawn-publish "$SUBDOMAIN.$HOSTNAME.$ZONE"
-done <"$AVAHI_SUBDOMAINS_LIST"
+done <"$SUBDOMAINS_LIST"
 
 while IFS= read -r FQDN; do
   spawn-publish "$FQDN"
-done <"$AVAHI_FQDNS_LIST"
+done <"$FQDNS_LIST"
 
 wait -n

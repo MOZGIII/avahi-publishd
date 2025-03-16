@@ -7,7 +7,7 @@ jq, procps, systemd, iproute2, avahi,
 let version = "0.1";
 
 in stdenv.mkDerivation {
-  pname = "avahi-subdomains";
+  pname = "avahi-publishd";
   inherit version;
 
   src = ../../bin;
@@ -18,13 +18,13 @@ in stdenv.mkDerivation {
     runHook preInstall
 
     mkdir -p $out/bin
-    cp avahi-subdomains $out/bin/
+    cp avahi-publishd $out/bin/
 
     runHook postInstall
   '';
 
   postInstall = ''
-    wrapProgram "$out/bin/avahi-subdomains" \
+    wrapProgram "$out/bin/avahi-publishd" \
       --prefix PATH : "${lib.makeBinPath [ jq procps systemd iproute2 avahi ]}"
   '';
 }
