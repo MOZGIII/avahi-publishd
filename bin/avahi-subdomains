@@ -3,7 +3,10 @@ set -euo pipefail
 
 trap 'pkill -P $$' EXIT
 
-AVAHI_SUBDOMAINS_LIST="${AVAHI_SUBDOMAINS_LIST:-"/etc/avahi-subdomains/subdomains"}"
+AVAHI_SUBDOMAINS_CONF_DIR="/etc/avahi-subdomains"
+
+AVAHI_SUBDOMAINS_LIST="${AVAHI_SUBDOMAINS_LIST:-"$AVAHI_SUBDOMAINS_CONF_DIR/subdomains"}"
+AVAHI_FQDNS_LIST="${AVAHI_FQDNS_LIST:-"$AVAHI_SUBDOMAINS_CONF_DIR/fqdns"}"
 
 if [[ "$(uname -s)" == "Linux" ]]; then
   mapfile -t IPS < <(ip -json addr show | jq -r '.[].addr_info[] | select(.scope != "host") | .local')
@@ -22,8 +25,7 @@ for IP in "${IPS[@]}"; do
 done
 
 spawn-publish() {
-  local SUBDOMAIN="$1"
-  local FQDN="$SUBDOMAIN.$HOSTNAME.$ZONE"
+  local FQDN="$1"
 
   for IP in "${IPS[@]}"; do
     echo "> $FQDN $IP"
@@ -32,7 +34,11 @@ spawn-publish() {
 }
 
 while IFS= read -r SUBDOMAIN; do
-  spawn-publish "$SUBDOMAIN"
+  spawn-publish "$SUBDOMAIN.$HOSTNAME.$ZONE"
 done <"$AVAHI_SUBDOMAINS_LIST"
+
+while IFS= read -r FQDN; do
+  spawn-publish "$FQDN"
+done <"$AVAHI_FQDNS_LIST"
 
 wait -n
