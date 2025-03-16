@@ -1,5 +1,5 @@
 {
-  description = "avahi-subdomains";
+  description = "avahi-publishd";
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
@@ -27,13 +27,13 @@
 
       # Provide some binary packages for selected system types.
       packages = forAllSystems
-        (system: { inherit (nixpkgsFor.${system}) avahi-subdomains; });
+        (system: { inherit (nixpkgsFor.${system}) avahi-publishd; });
 
       # The default package for 'nix build'. This makes sense if the
       # flake provides only one package or there is a clear "main"
       # package.
       defaultPackage =
-        forAllSystems (system: self.packages.${system}.avahi-subdomains);
+        forAllSystems (system: self.packages.${system}.avahi-publishd);
 
       # A NixOS module.
       nixosModules.default = import ./nix/nixos/modules/default.nix;

@@ -1,5 +1,5 @@
 { callPackage, ... }:
 
 {
-  avahi-subdomains = callPackage ./avahi-subdomains.nix { };
+  avahi-publishd = callPackage ./avahi-publishd.nix { };
 }
