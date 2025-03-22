@@ -39,8 +39,8 @@ in {
     systemd.services = {
       avahi-publishd = {
         wants = [ "network-online.target" ];
+        after = [ "network-online.target" "avahi-daemon.service" ];
         wantedBy = [ "multi-user.target" ];
-        after = [ "avahi-daemon.service" ];
         serviceConfig = {
           Type = "exec";
           ExecStart = "${cfg.package}/bin/avahi-publishd";
