@@ -1,6 +1,6 @@
 [Unit]
 Wants=network-online.target
-After=avahi-daemon.service
+After=network-online.target avahi-daemon.service
 
 [Service]
 Type=exec
